@@ -18,7 +18,7 @@ public class SqlStats {
     
     private String tableName = "stats";
     
-    MySql mySQL;
+    private MySql mySQL;
     
     public SqlStats(MySql mySQL) {
         this.mySQL = mySQL;
