@@ -2,9 +2,11 @@ package de.master.skypvp.lib.location;
 
 import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.Storage;
+import lombok.SneakyThrows;
 import org.bukkit.*;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -21,6 +23,7 @@ public class LocationConfiguration {
         config = YamlConfiguration.loadConfiguration(file);
     
         loadSigns(storage);
+        loadItemSigns(storage);
     }
     
     public void addLocation(String name, Location loc) {
@@ -96,6 +99,35 @@ public class LocationConfiguration {
         
         return signs;
         
+    }
+    
+    private int signCount = 0;
+    
+    @SneakyThrows
+    public void addItemSign(Location loc, ItemStack item) {
+        
+        
+        config.set("itemSign." + signCount + ".World", loc.getWorld().getName());
+        config.set("itemSign." + signCount + ".X", loc.getX());
+        config.set("itemSign." + signCount + ".Y", loc.getY());
+        config.set("itemSign." + signCount + ".Z", loc.getZ());
+        config.set("itemSign." + signCount + ".itemStack", item.toString());
+        
+        signCount++;
+    
+        config.save(file);
+    }
+    
+    public void loadItemSigns(Storage storage) {
+    
+        for (String signCount : config.getConfigurationSection("itemSign").getKeys(false)) {
+    
+            String section = "itemSign." + signCount + ".";
+            Location loc = new Location(Bukkit.getWorld(config.getString(section + "World")), config.getDouble(section + "X"), config.getDouble(section + "Y"), config.getDouble(section + "Z"));
+    
+            storage.itemSign.put(loc, config.getItemStack(section + "itemStack"));
+        }
+    
     }
     
 }
