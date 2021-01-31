@@ -3,7 +3,6 @@ package de.master.skypvp.core.listener;
 import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.CoreLib;
 import de.master.skypvp.lib.mysql.SqlStats;
-import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Sign;
@@ -26,7 +25,7 @@ public class SignChangeListener implements Listener {
     
         String line1 = e.getLine(0), line2 = e.getLine(1);
     
-        if (line1.equalsIgnoreCase("[SkyPvp]")) {
+        if (line1.equalsIgnoreCase("[SkyPvp]") && p.hasPermission("skypvp.sign")) {
             if (line2.equalsIgnoreCase("Item")) {
                 
                 JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().setItemSign.add(p.getName());
