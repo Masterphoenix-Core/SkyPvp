@@ -120,12 +120,14 @@ public class LocationConfiguration {
     
     public void loadItemSigns(Storage storage) {
     
-        for (String signCount : config.getConfigurationSection("itemSign").getKeys(false)) {
-    
-            String section = "itemSign." + signCount + ".";
-            Location loc = new Location(Bukkit.getWorld(config.getString(section + "World")), config.getDouble(section + "X"), config.getDouble(section + "Y"), config.getDouble(section + "Z"));
-    
-            storage.itemSign.put(loc, config.getItemStack(section + "itemStack"));
+        if (config.getConfigurationSection("itemSign") != null) {
+            for (String signCount : config.getConfigurationSection("itemSign").getKeys(false)) {
+        
+                String section = "itemSign." + signCount + ".";
+                Location loc = new Location(Bukkit.getWorld(config.getString(section + "World")), config.getDouble(section + "X"), config.getDouble(section + "Y"), config.getDouble(section + "Z"));
+        
+                storage.itemSign.put(loc, config.getItemStack(section + "itemStack"));
+            }
         }
     
     }

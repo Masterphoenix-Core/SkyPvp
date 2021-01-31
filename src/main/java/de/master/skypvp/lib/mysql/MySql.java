@@ -19,20 +19,23 @@ public class MySql {
     
     private final String mySqlPrefix = CoreLib.prefix + "§8[§b§lMySQL§8] ";
     
-    private String host = "localhost", database = "skypvp", user = "root", password = "";
     private Connection con;
     
     @Getter
     private SqlStats sqlStats;
     
+    private MySqlConfiguration mySqlConfig;
+    
     public MySql() {
+        mySqlConfig = new MySqlConfiguration();
+        
         connect();
         sqlStats = new SqlStats(this);
     }
     
     public void connect() {
         try {
-            con = DriverManager.getConnection("jdbc:mysql://" + host + ":3306/" + database + "?autoReconnect=true", user, password);
+            con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase() + "?autoReconnect=true", mySqlConfig.getUser(), mySqlConfig.getPassword());
             Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§aVerbindung hergestellt!");
             
             isConnected = true;
