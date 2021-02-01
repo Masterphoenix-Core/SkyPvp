@@ -2,6 +2,7 @@ package de.master.skypvp.core.commands;
 
 import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.CoreLib;
+import de.master.skypvp.lib.Storage;
 import de.master.skypvp.lib.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.command.*;
@@ -18,7 +19,23 @@ public class SkyPvpCommandExecutor implements CommandExecutor {
     
             if (p.hasPermission("skypvp.command")) {
                 //skypvp set spawn
-                if (args.length == 2) {
+    
+                //skypvp build
+                if (args.length == 1) {
+                    if (args[0].equalsIgnoreCase("build")) {
+    
+                        Storage storage = JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage();
+    
+                        if (!storage.buildList.contains(p.getName())) {
+                            storage.buildList.add(p.getName());
+                            p.sendMessage(CoreLib.prefix + "Du kannst nun bauen.");
+                        } else {
+                            storage.buildList.remove(p.getName());
+                            p.sendMessage(CoreLib.prefix + "Du kannst nun nicht mehr bauen.");
+                        }
+                        
+                    }
+                } else if (args.length == 2) {
         
                     if (args[0].equalsIgnoreCase("set")) {
                         if (args[1].equals("spawn")) {
@@ -28,14 +45,12 @@ public class SkyPvpCommandExecutor implements CommandExecutor {
                 
                         }
                     }
-        
-                } else
-        
+    
                     //skypvp giveitem MATERIAL NAME
-                    if (args.length == 3) {
+                } else if (args.length == 3) {
                         if (args[0].equalsIgnoreCase("giveItem")) {
                 
-                            Material material = Material.getMaterial(args[1]);
+                            Material material = Material.getMaterial(args[1].toUpperCase());
                 
                             if (material == null) {
                                 p.sendMessage(CoreLib.prefix + "Es wurde §ckein Item §7mit dem Namen §6" + args[1] + " §7gefunden.");

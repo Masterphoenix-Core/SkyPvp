@@ -2,6 +2,7 @@ package de.master.skypvp.core.listener;
 
 import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.CoreLib;
+import de.master.skypvp.lib.location.LocationConfiguration;
 import de.master.skypvp.lib.mysql.SqlStats;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
@@ -42,6 +43,7 @@ public class PlayerDeathListener implements Listener {
         }
     
         JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().addDeaths(p.getUniqueId().toString(), 1);
+        updateSigns();
         e.setDeathMessage(CoreLib.prefix + "§6" + e.getEntity().getName() + " §7ist gestorben.");
         
     }
@@ -57,19 +59,9 @@ public class PlayerDeathListener implements Listener {
     }
     
     private void updateSigns() {
-        Map<Sign, Integer> signs = JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().getSigns();
-        SqlStats sqlStats = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats();
-        
-        for (Sign sign : signs.keySet()) {
-            
-            sign.setLine(1, "Kills: " + sqlStats.getPlayerKills(sqlStats.getTopPlayer(signs.get(sign)).getUniqueId().toString()));
-            sign.setLine(2, "Deaths: " + sqlStats.getPlayerDeaths(sqlStats.getTopPlayer(signs.get(sign)).getUniqueId().toString()));
-            sign.setLine(3, "K/D: " + (sqlStats.getPlayerKills(sqlStats.getTopPlayer(signs.get(sign)).getUniqueId().toString()) /
-                    sqlStats.getPlayerDeaths(sqlStats.getTopPlayer(signs.get(sign)).getUniqueId().toString())));
-            
-            sign.update();
     
-        }
+        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().reloadSigns();
+        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getNpcConfiguration().reloadNpcs();
         
     }
     

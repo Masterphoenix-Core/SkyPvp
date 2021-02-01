@@ -39,7 +39,7 @@ public class Npc implements Serializable {
         gameProfile = new GameProfile(UUID.randomUUID(), name);
         this.location = location.clone();
         
-        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.add(this);
+        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.put(entityId, this);
     }
     
     public Npc(String name, Integer entityID, UUID uuid, Location location) {
@@ -47,7 +47,7 @@ public class Npc implements Serializable {
         gameProfile = new GameProfile(uuid, name);
         this.location = location.clone();
         
-        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.add(this);
+        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.put(entityID, this);
     }
     
     public void setSkin(String name) {
@@ -75,6 +75,8 @@ public class Npc implements Serializable {
         PacketPlayOutNamedEntitySpawn packet = packetPlayOutNamedEntitySpawn();
         sendPacket(packet);
         headRotation(location.getYaw(), location.getPitch());
+        
+        removeFromTablist();
     }
     
     public void spawn(Player player) {

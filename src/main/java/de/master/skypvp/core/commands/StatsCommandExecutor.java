@@ -9,25 +9,24 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
+
 public class StatsCommandExecutor implements CommandExecutor {
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         
         if (sender instanceof Player) {
             Player p = (Player) sender;
     
-            SqlStats sqlStats = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats();
             
             if (args.length == 0) {
                 
                 p.sendMessage(CoreLib.prefix + "Deine Stats:");
-                p.sendMessage("§8» §7Kills: §a" + sqlStats.getPlayerKills(p.getUniqueId().toString()));
-                p.sendMessage("§8» §7Deaths: §c" + sqlStats.getPlayerDeaths(p.getUniqueId().toString()));
     
-                double kd = sqlStats.getPlayerKills(p.getUniqueId().toString()) / sqlStats.getPlayerDeaths(p.getUniqueId().toString());
-                
-                p.sendMessage("§8» §7K/D: §e" + kd);
-                
+                sendStats(p, p.getUniqueId());
+    
+    
             } else if (args.length == 1) {
     
                 OfflinePlayer op = Bukkit.getOfflinePlayer(args[0]);
@@ -37,18 +36,31 @@ public class StatsCommandExecutor implements CommandExecutor {
                 }
     
                 p.sendMessage(CoreLib.prefix + "Stats von §a" + op.getName() + "§7:");
-                p.sendMessage("§8» §7Kills: §a" + sqlStats.getPlayerKills(op.getUniqueId().toString()));
-                p.sendMessage("§8» §7Deaths: §c" + sqlStats.getPlayerDeaths(op.getUniqueId().toString()));
     
-                double kd = sqlStats.getPlayerKills(op.getUniqueId().toString()) / sqlStats.getPlayerDeaths(op.getUniqueId().toString());
+                sendStats(p, op.getUniqueId());
     
-                p.sendMessage("§8» §7K/D: §e" + kd);
-                
             } else
                 p.sendMessage(CoreLib.prefix + "Bitte benutze §c/stats (<Spieler>)§7.");
             
         }
         
         return false;
+    }
+    
+    private void sendStats(Player p, UUID id) {
+        SqlStats sqlStats = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats();
+    
+        int kills = sqlStats.getPlayerKills(id.toString());
+        p.sendMessage("§8» §7Kills: §a" + kills);
+        
+        int deaths = sqlStats.getPlayerDeaths(id.toString());
+        p.sendMessage("§8» §7Deaths: §c" + deaths);
+        
+        if (deaths == 0) {
+            p.sendMessage("§8» §7K/D: §e" + kills + ".00");
+        } else {
+            double kd = CoreLib.round((double) kills / deaths, 2);
+            p.sendMessage("§8» §7K/D: §e" + kd);
+        }
     }
 }

@@ -13,19 +13,21 @@ public class Storage {
     public Map<String, String> killer;
     public Map<Location, ItemStack> itemSign;
     
-    public List<String> setItemSign;
+    public List<String> setItemSign, buildList;
     public List<Sign> topSigns;
     
-    public List<Npc> npcList;
+    public Map<Integer, Npc> npcList;
     
     public Storage() {
-        npcList = new ArrayList<>();
+        npcList = new HashMap<>();
         itemSign = new HashMap<>();
         topSigns = new ArrayList<>();
     
         setItemSign = new ArrayList<>();
         killer = new HashMap<>();
         playerKit = new HashMap<>();
+    
+        buildList = new ArrayList<>();
         
     }
     

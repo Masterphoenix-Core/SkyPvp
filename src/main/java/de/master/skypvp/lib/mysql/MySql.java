@@ -11,6 +11,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.sql.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MySql {
     
@@ -22,35 +23,53 @@ public class MySql {
     private Connection con;
     
     @Getter
-    private SqlStats sqlStats;
+    private final SqlStats sqlStats;
     
-    private MySqlConfiguration mySqlConfig;
+    private final MySqlConfiguration mySqlConfig;
     
     public MySql() {
         mySqlConfig = new MySqlConfiguration();
-        
-        connect();
         sqlStats = new SqlStats(this);
     }
     
-    public void connect() {
-        try {
-            con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase() + "?autoReconnect=true", mySqlConfig.getUser(), mySqlConfig.getPassword());
-            Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§aVerbindung hergestellt!");
-            
-            isConnected = true;
-            
-        } catch (SQLException throwables) {
-            Bukkit.getConsoleSender().sendMessage(mySqlPrefix+ "§cVerbindung konnte nicht hergestellt werden!");
-            Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cError:" + throwables.getMessage());
-        }
+    Thread mySqlThread;
+    
+    public Thread connect() {
+        
+        //con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase(), mySqlConfig.getUser(), mySqlConfig.getPassword());
+        mySqlThread = new Thread(() -> {
+            try {
+                con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase() + "?autoReconnect=true", mySqlConfig.getUser(), mySqlConfig.getPassword());
+                //con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase(), mySqlConfig.getUser(), mySqlConfig.getPassword());
+                Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§aVerbindung hergestellt!");
+                
+                isConnected = true;
+                
+            } catch (SQLException throwables) {
+                Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cVerbindung konnte nicht hergestellt werden!");
+                Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cError:" + throwables.getMessage());
+            }
+        });
+        
+        mySqlThread.start();
+        return mySqlThread;
     }
     
+/*
     public void disconnect() {
+    
+        try {
+            connect().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    
         try {
             if (con != null) {
                 con.close();
                 Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cVerbindung unterbrochen!");
+                
+                mySqlThread.stop();
                 
                 isConnected = false;
             }
@@ -59,25 +78,71 @@ public class MySql {
             Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cError:" + throwables.getMessage());
         }
     }
+ */
     
     public void update(String qry) {
-        try {
-            Statement st = con.createStatement();
-            st.executeUpdate(qry);
-            st.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        
+        if (con != null) {
+    
+            try {
+                mySqlThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+    
+            try {
+                Statement st = con.createStatement();
+                st.executeUpdate(qry);
+                st.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        } else {
+    
+            System.err.println("Connection == null");
+            
+            try {
+                connect().join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+            update(qry);
         }
     }
     
     public ResultSet query(String qry) {
-        ResultSet rs = null;
-        try {
-            Statement st = con.createStatement();
-            rs = st.executeQuery(qry);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        
+        if (con != null) {
+    
+            try {
+                mySqlThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+            try {
+                Statement st = con.createStatement();
+                return st.executeQuery(qry);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            
+            
+        } else {
+    
+            System.err.println("Connection == null");
+    
+            try {
+                connect().join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+    
+            query(qry);
         }
-        return rs;
+        
+        return null;
+        
     }
 }

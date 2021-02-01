@@ -22,7 +22,7 @@ public class KitConfiguration {
     
     public KitConfiguration() {
     
-        file = new File("plugins/SkyPvp", "kits.yml");
+        file = new File("plugins/SkyPvP", "kits.yml");
         config = YamlConfiguration.loadConfiguration(file);
         
         addDefaults();

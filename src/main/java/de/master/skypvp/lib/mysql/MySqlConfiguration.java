@@ -12,7 +12,16 @@ public class MySqlConfiguration {
     
     public MySqlConfiguration() {
     
-        file = new File("plugins/skypvp", "mysql.yml");
+        file = new File("plugins/SkyPvP", "mysql.yml");
+    
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
         config = YamlConfiguration.loadConfiguration(file);
         
         addDefaults();

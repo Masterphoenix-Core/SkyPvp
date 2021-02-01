@@ -18,10 +18,9 @@ public class NpcConfiguration {
     private File file;
     
     public NpcConfiguration() {
-        
         npcLoaded = false;
         
-        file = new File("plugins/SkyPvp", "npcs.yml");
+        file = new File("plugins/SkyPvP", "npcs.yml");
         config = YamlConfiguration.loadConfiguration(file);
     }
     
@@ -79,7 +78,6 @@ public class NpcConfiguration {
     
                 } else {
                     Npc npc = new Npc(config.getString(section + "name"), npcId, UUID.randomUUID(), loc);
-                    npc.setSkin("Masterphoenix_");
                     npc.spawn();
                 }
                 
@@ -91,9 +89,38 @@ public class NpcConfiguration {
         
     }
     
+    public void removeNpc(int id) {
+        config.set("npc." + id, null);
+    
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void reloadNpcs() {
+    
+        for (int i = 1; i < 4; i++) {
+            reloadNpcConfig(i);
+    
+            if (JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(i) == null) {
+                return;
+            }
+            
+            String currentPlayerSkinName = config.getString("npc." + i + ".playerSkinName"),
+                    newPlayerSkinName = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(i).getName();
+    
+            if (!currentPlayerSkinName.equals(newPlayerSkinName)) {
+                JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.get(i).setSkin(newPlayerSkinName);
+            }
+            
+        }
+        
+    }
+    
     @SneakyThrows
     private void reloadNpcConfig(int entityId) {
-    
         OfflinePlayer op = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(entityId);
         
         if (op != null && op.hasPlayedBefore()) {

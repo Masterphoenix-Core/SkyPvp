@@ -79,9 +79,10 @@ public class InteractListener implements Listener {
                         coreLib.getStorage().itemSign.put(e.getClickedBlock().getLocation(), item);
                         
                         JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().addItemSign(e.getClickedBlock().getLocation(), item);
-            
-                    } else
+    
+                    } else if (coreLib.getStorage().itemSign.containsKey(e.getClickedBlock().getLocation())) {
                         e.getPlayer().getInventory().addItem(coreLib.getStorage().itemSign.get(e.getClickedBlock().getLocation()));
+                    }
         
                 }
     

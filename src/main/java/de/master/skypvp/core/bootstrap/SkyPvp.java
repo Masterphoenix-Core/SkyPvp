@@ -27,8 +27,7 @@ public class SkyPvp extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        if(mySql.isConnected())
-            mySql.disconnect();
+    
     }
     
     private void initCommands() {
@@ -39,10 +38,13 @@ public class SkyPvp extends JavaPlugin {
     }
     
     private void initListener() {
+        new BlockBreakListener();
+        new BlockPlaceListener();
         new EntityDamageListener();
         new InteractListener();
         new InventoryClickListener();
         new PlayerDeathListener();
+        new PlayerDropItemListener();
         new PlayerJoinListener();
         new PlayerMoveListener();
         new PlayerQuitListener();

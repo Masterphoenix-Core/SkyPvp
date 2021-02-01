@@ -25,4 +25,15 @@ public class CoreLib {
         locationConfiguration = new LocationConfiguration(storage);
     }
     
+    public static double round(double value, int places) {
+        
+        if (places < 0)
+            throw new IllegalArgumentException();
+        
+        long factor = (long) Math.pow(10, places);
+        long tmp = Math.round(value * factor);
+        
+        return (double) tmp / factor;
+    }
+    
 }

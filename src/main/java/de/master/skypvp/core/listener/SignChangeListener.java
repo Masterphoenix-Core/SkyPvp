@@ -42,21 +42,26 @@ public class SignChangeListener implements Listener {
     
                 if (offlinePlayer != null && offlinePlayer.hasPlayedBefore()) {
                     e.setLine(0, "--- " + line2 + " ---");
-                    e.setLine(1, "Kills: " + sqlStats.getPlayerKills(offlinePlayer.getUniqueId().toString()));
-                    e.setLine(2, "Deaths: " + sqlStats.getPlayerDeaths(offlinePlayer.getUniqueId().toString()));
+                    
+                    int kills = sqlStats.getPlayerKills(offlinePlayer.getUniqueId().toString());
+                    e.setLine(1, "Kills: " + kills);
+                    
+                    int deaths = sqlStats.getPlayerDeaths(offlinePlayer.getUniqueId().toString());
+                    e.setLine(2, "Deaths: " + deaths);
     
     
                     if (sqlStats.getPlayerDeaths(offlinePlayer.getUniqueId().toString()) != 0) {
-                        double kd = sqlStats.getPlayerKills(offlinePlayer.getUniqueId().toString()) / sqlStats.getPlayerDeaths(offlinePlayer.getUniqueId().toString());
+                        double kd = Double.parseDouble(String.valueOf(kills / deaths));
                         e.setLine(3, "K/D: " + kd);
                     } else
-                        e.setLine(3, "K/D: " + sqlStats.getPlayerKills(offlinePlayer.getUniqueId().toString()));
+                        e.setLine(3, "K/D: " + kills);
+                } else {
+                    e.setLine(0, "--- " + line2 + " ---");
+                    e.setLine(1, "Noch keine Daten...");
                 }
                 
-                e.setLine(0, "--- " + line2 + " ---");
-                e.setLine(1, "Noch keine Daten...");
                 
-                JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().addSign(line2, (Sign) e.getBlock().getState());
+                JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().addTopSign(line2.replace(" ", ""), (Sign) e.getBlock().getState());
                 
             } else
                 p.sendMessage(CoreLib.prefix + "Mache ein §bSkyPvp §7Schild, indem in der 2. Zeile <§eItem§8/§e'Top 1/2/3'>  §7steht.");

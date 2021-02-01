@@ -19,31 +19,7 @@ public class NpcCommandExecutor implements CommandExecutor {
             Player p = (Player) sender;
             
             if (p.hasPermission("skypvp.npc")) {
-                if (args.length == 1) {
-                    if (args[0].equalsIgnoreCase("list")) {
-                        
-                        p.sendMessage(CoreLib.prefix + "§bNPC-List");
-                        
-                        if (JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.isEmpty()) {
-                            p.sendMessage(CoreLib.prefix + "Es wurden noch keine NPCs erschaffen.");
-                            return false;
-                        }
-                        
-                        JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.forEach(n -> {
-                            
-                            p.sendMessage("§8§k----------------");
-                            p.sendMessage("§7Name: §6" + n.getGameProfile().getName());
-                            p.sendMessage("§7World: §6" + n.getLocation().getWorld().getName());
-                            p.sendMessage("§7X: §6" + n.getLocation().getX());
-                            p.sendMessage("§7Y: §6" + n.getLocation().getY());
-                            p.sendMessage("§7Z: §6" + n.getLocation().getZ());
-                            
-                        });
-                        
-                    } else
-                        sendHelpMessage(p);
-                    
-                } else if (args.length == 3) { // npc spawn/create top <num>
+                 if (args.length == 3) { // npc spawn/create top <num>
                     if (args[0].equalsIgnoreCase("spawn") || args[0].equalsIgnoreCase("create")) {
                         if (args[1].equalsIgnoreCase("top")) {
                             
@@ -80,7 +56,25 @@ public class NpcCommandExecutor implements CommandExecutor {
                             p.sendMessage(CoreLib.prefix + "Du hast den Top-Player §6Nummer " + top + " §7gespawnt!");
                             
                         } else
-                            p.sendMessage(CoreLib.prefix + "§7Bitte benutze §c/npc spawn top <Nummer>§7.");
+                            p.sendMessage(CoreLib.prefix + "§7Bitte benutze §c/npc <spawn/create> top <Nummer>§7.");
+                    } else if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete")) {
+                        if (args[1].equalsIgnoreCase("top")) {
+                            int top = 0;
+                            try {
+                                top = Integer.parseInt(args[2]);
+                            } catch (NumberFormatException e) {
+                                p.sendMessage(CoreLib.prefix + "§7Du musst eine §cZahl §7als Top-Platzierung angeben!");
+                            }
+    
+                            if (top == 0) {
+                                return false;
+                            }
+                            
+                            JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getNpcConfiguration().removeNpc(top);
+                            JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.get(top).destroy();
+                            p.sendMessage(CoreLib.prefix + "Du hast den Top-Player §6" + top + " §cgelöscht§7.");
+                        } else
+                            p.sendMessage(CoreLib.prefix + "Bitte benutze §c/npc <remove/delete> top <Nummer>§7.");
                     } else
                         sendHelpMessage(p);
                 } else

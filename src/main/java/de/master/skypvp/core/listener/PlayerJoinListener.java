@@ -2,6 +2,7 @@ package de.master.skypvp.core.listener;
 
 import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.CoreLib;
+import de.master.skypvp.lib.mysql.SqlStats;
 import de.master.skypvp.lib.npc.Npc;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -21,16 +22,25 @@ public class PlayerJoinListener implements Listener {
         e.setJoinMessage(CoreLib.prefix + "§e" + e.getPlayer().getName() + " §7ist dem Spiel §abeigetreten§7.");
         
         CoreLib coreLib = JavaPlugin.getPlugin(SkyPvp.class).getCoreLib();
+        SqlStats sqlStats = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats();
         
         e.getPlayer().getInventory().clear();
         e.getPlayer().getInventory().addItem(coreLib.getKitConfiguration().kitItem);
     
+        e.getPlayer().sendMessage("Checking Database...");
+        if (!sqlStats.playerExists(e.getPlayer().getUniqueId().toString())) {
+            e.getPlayer().sendMessage("Attempting to create...");
+            sqlStats.createPlayer(e.getPlayer().getUniqueId().toString());
+            e.getPlayer().sendMessage("Created §a" + e.getPlayer().getName() + " §7in database");
+        } else
+            e.getPlayer().sendMessage("Bereits in der Database");
+        
         if (!coreLib.getNpcConfiguration().npcLoaded) {
             coreLib.getNpcConfiguration().loadNpcs();
         }
     
-        for (Npc npc : coreLib.getStorage().npcList) {
-            npc.spawn(e.getPlayer());
+        for (int n : coreLib.getStorage().npcList.keySet()) {
+            coreLib.getStorage().npcList.get(n).spawn(e.getPlayer());
         }
     
         try {
