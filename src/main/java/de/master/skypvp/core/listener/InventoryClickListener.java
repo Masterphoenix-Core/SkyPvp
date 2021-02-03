@@ -22,6 +22,12 @@ public class InventoryClickListener implements Listener {
         if (e.getClickedInventory() == null || e.getCurrentItem() == null) {
             return;
         }
+    
+        if (e.getCurrentItem().equals(JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getKitConfiguration().kitItem) &&
+                !JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().buildList.contains(e.getWhoClicked().getName())) {
+            e.setCancelled(true);
+            return;
+        }
         
         if (e.getWhoClicked() instanceof Player && e.getClickedInventory().getName().equals(CoreLib.kitInventoryName)) {
             Player p = (Player) e.getWhoClicked();

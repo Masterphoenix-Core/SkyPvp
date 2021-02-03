@@ -11,12 +11,12 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.sql.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MySql {
     
     @Getter
     private boolean isConnected = false;
+    boolean errored = false;
     
     private final String mySqlPrefix = CoreLib.prefix + "§8[§b§lMySQL§8] ";
     
@@ -27,6 +27,9 @@ public class MySql {
     
     private final MySqlConfiguration mySqlConfig;
     
+    private String user = "skypvp", database = "skypvp";
+    
+    
     public MySql() {
         mySqlConfig = new MySqlConfiguration();
         sqlStats = new SqlStats(this);
@@ -35,24 +38,38 @@ public class MySql {
     Thread mySqlThread;
     
     public Thread connect() {
-        
-        //con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase(), mySqlConfig.getUser(), mySqlConfig.getPassword());
-        mySqlThread = new Thread(() -> {
-            try {
-                con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase() + "?autoReconnect=true", mySqlConfig.getUser(), mySqlConfig.getPassword());
-                //con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":3306/" + mySqlConfig.getDatabase(), mySqlConfig.getUser(), mySqlConfig.getPassword());
-                Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§aVerbindung hergestellt!");
-                
-                isConnected = true;
-                
-            } catch (SQLException throwables) {
-                Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cVerbindung konnte nicht hergestellt werden!");
-                Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cError:" + throwables.getMessage());
-            }
-        });
-        
-        mySqlThread.start();
-        return mySqlThread;
+    
+        if (!errored) {
+            mySqlThread = new Thread(() -> {
+                try {
+                    try {
+                        Class.forName("com.mysql.jdbc.Driver").newInstance();
+                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    con = DriverManager.getConnection("jdbc:mysql://" + mySqlConfig.getHost() + ":" + mySqlConfig.getPort() + "/" + mySqlConfig.getDatabase() + "?autoReconnect=true", mySqlConfig.getUser(), mySqlConfig.getPassword());
+                    //con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3307/" + "smash" + "?autoReconnect=true", "root", "");
+                    Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§aVerbindung hergestellt!");
+            
+                    isConnected = true;
+            
+                } catch (SQLException throwables) {
+                    Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cVerbindung konnte nicht hergestellt werden! Stoppe MySQL!");
+                    Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cFehler: ");
+                    throwables.printStackTrace();
+            
+                    errored = true;
+                }
+            });
+            
+            mySqlThread.setName("MySqlThread");
+            mySqlThread.start();
+    
+            return mySqlThread;
+        } else {
+            System.out.println("MySql errored, not executing connect()");
+            return null;
+        }
     }
     
 /*
@@ -83,13 +100,6 @@ public class MySql {
     public void update(String qry) {
         
         if (con != null) {
-    
-            try {
-                mySqlThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-    
             try {
                 Statement st = con.createStatement();
                 st.executeUpdate(qry);
@@ -97,29 +107,38 @@ public class MySql {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
+            
         } else {
     
-            System.err.println("Connection == null");
+            if (errored) {
+                //System.out.println("MySql errored, not executing update()");
+                return;
+            }
             
+            System.err.println("Connection == null");
+    
             try {
-                connect().join();
+                if (mySqlThread != null && mySqlThread.isAlive()) {
+                    mySqlThread.join();
+                } else {
+                    
+                    System.out.println("Trying to connect MySql from update()");
+                    connect().join();
+                    
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            
-            update(qry);
+    
+            if (!errored) {
+                update(qry);
+            }
         }
     }
     
     public ResultSet query(String qry) {
         
         if (con != null) {
-    
-            try {
-                mySqlThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             
             try {
                 Statement st = con.createStatement();
@@ -128,18 +147,30 @@ public class MySql {
                 throwables.printStackTrace();
             }
             
-            
         } else {
-    
+            
+            if (errored) {
+                //System.out.println("MySql errored, not executing query()");
+                return null;
+            }
+            
             System.err.println("Connection == null");
-    
+            
             try {
-                connect().join();
+                if (mySqlThread != null && mySqlThread.isAlive()) {
+                    mySqlThread.join();
+                } else {
+                    connect().join();
+                    System.out.println("Trying to connect MySql from query()");
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
     
-            query(qry);
+            if (!errored) {
+                query(qry);
+            }
+            
         }
         
         return null;

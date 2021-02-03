@@ -6,7 +6,7 @@
 
     <groupId>de.master</groupId>
     <artifactId>Skypvp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.98.12-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -20,14 +20,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <!-- This adds the Spigot Maven repository to the build -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
@@ -38,11 +30,17 @@
         </dependency>
 
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.23</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.azbh111</groupId>
+            <artifactId>spigot-1.8.8</artifactId>
+            <version>R</version>
+        </dependency>
+
     </dependencies>
 
 </project>

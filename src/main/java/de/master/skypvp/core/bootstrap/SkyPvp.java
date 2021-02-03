@@ -49,6 +49,7 @@ public class SkyPvp extends JavaPlugin {
         new PlayerMoveListener();
         new PlayerQuitListener();
         new SignChangeListener();
+        new WeatherChangeListener();
     }
     
 }

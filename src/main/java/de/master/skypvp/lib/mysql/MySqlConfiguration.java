@@ -14,13 +14,20 @@ public class MySqlConfiguration {
     
         file = new File("plugins/SkyPvP", "mysql.yml");
     
+        
+        /*
         if (!file.exists()) {
             try {
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+         */
+        
         
         config = YamlConfiguration.loadConfiguration(file);
         
@@ -29,6 +36,7 @@ public class MySqlConfiguration {
     
     private void addDefaults() {
         config.addDefault("mysql.host", "localhost");
+        config.addDefault("mysql.port", "3306");
         config.addDefault("mysql.database", "skypvp");
         config.addDefault("mysql.user", "skypvp");
         config.addDefault("mysql.password", "password");
@@ -42,6 +50,9 @@ public class MySqlConfiguration {
     
     public String getHost() {
         return config.getString("mysql.host");
+    }
+    public int getPort() {
+        return config.getInt("mysql.port");
     }
     public String getDatabase() {
         return config.getString("mysql.database");

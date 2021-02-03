@@ -27,22 +27,32 @@ public class SqlStats {
         
         //mySQL.update("CREATE TABLE IF NOT EXISTS " + tableName + " (UUID VARCHAR(36), KILLS INT, DEATHS INT);");
         //mySQL.update("ALTER TABLE " + tableName + " ADD UNIQUE(UUID);");
+        
     }
     
     @SneakyThrows
     public boolean playerExists(String uuid) {
         ResultSet rs = mySQL.query("SELECT * FROM " + tableName + " WHERE UUID= '" + uuid + "'");
-    
+        
         if (rs == null) {
             try {
-                if (mySQL.mySqlThread.isAlive()) {
+                if (mySQL.mySqlThread != null && mySQL.mySqlThread.isAlive()) {
+                    System.out.println("Joining MySQL-Thread from playerExists()");
                     mySQL.mySqlThread.join();
+                } else {
+                    System.out.println("Reconnecting to My-SQL from playerExists()");
+                    mySQL.connect().join();
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-    
+            
             rs = mySQL.query("SELECT * FROM " + tableName + " WHERE UUID= '" + uuid + "'");
+            
+        }
+    
+        if (rs == null) {
+            System.out.println("ResultSet is still null!");
         }
         
         if (rs != null) {
@@ -50,15 +60,17 @@ public class SqlStats {
                 return rs.getString("UUID") != null;
             }
         }
+    
+        System.out.println("Returning FALSE");
         return false;
     }
     
     public void createPlayer(String uuid) {
-        new Thread(() -> {
-            if (!(playerExists(uuid))) {
-                mySQL.update("INSERT INTO " + tableName + "(UUID, KILLS, DEATHS) VALUES('" + uuid + "', '0', '0');");
-            }
-        }).start();
+        if (!playerExists(uuid)) {
+            mySQL.update("INSERT INTO " + tableName + "(UUID, KILLS, DEATHS) VALUES('" + uuid + "', '0', '0');");
+        } else {
+            System.out.println("UUID=" + uuid + " ALREADY IN DATABASE");
+        }
     }
     
     public int getPlayerKills(String uuid) {
@@ -77,11 +89,14 @@ public class SqlStats {
                 }
                 
             } else {
-                createPlayer(uuid);
-                getPlayerKills(uuid);
+                if (!mySQL.errored) {
+                    createPlayer(uuid);
+                    getPlayerKills(uuid);
+                }
             }
         });
         
+        t.setName("GetPlayerKillsThread");
         t.start();
         
         try {
@@ -109,12 +124,15 @@ public class SqlStats {
                 }
                 
             } else {
-                createPlayer(uuid);
-                getPlayerKills(uuid);
+                if (!mySQL.errored) {
+                    createPlayer(uuid);
+                    getPlayerDeaths(uuid);
+                }
             }
             
         });
         
+        t.setName("GetPlayerDeathsThread");
         t.start();
         
         try {
@@ -136,14 +154,14 @@ public class SqlStats {
                     if (rs.next()) {
                         offlinePlayer[0] = Bukkit.getOfflinePlayer(UUID.fromString(rs.getString("UUID")));
                     }
-                } else
-                    System.out.println("Top Player " + top + " == null");
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
             
         });
         
+        t.setName("GetTopPlayerThread");
         t.start();
         
         try {
@@ -157,27 +175,23 @@ public class SqlStats {
     
     public void setKills(String uuid, int kills) {
         
-        new Thread(() -> {
-            if (playerExists(uuid)) {
-                mySQL.update("UPDATE " + tableName + " SET KILLS= '" + kills + "' WHERE UUID= '" + uuid + "';");
-            } else {
-                createPlayer(uuid);
-                setKills(uuid, kills);
-            }
-        }).start();
+        if (playerExists(uuid)) {
+            mySQL.update("UPDATE " + tableName + " SET KILLS= '" + kills + "' WHERE UUID= '" + uuid + "';");
+        } else {
+            createPlayer(uuid);
+            setKills(uuid, kills);
+        }
         
     }
     
     public void setDeaths(String uuid, int deaths) {
         
-        new Thread(() -> {
-            if (playerExists(uuid)) {
-                mySQL.update("UPDATE " + tableName + " SET DEATHS= '" + deaths + "' WHERE UUID= '" + uuid + "';");
-            } else {
-                createPlayer(uuid);
-                setDeaths(uuid, deaths);
-            }
-        }).start();
+        if (playerExists(uuid)) {
+            mySQL.update("UPDATE " + tableName + " SET DEATHS= '" + deaths + "' WHERE UUID= '" + uuid + "';");
+        } else {
+            createPlayer(uuid);
+            setDeaths(uuid, deaths);
+        }
     }
     
     public void addKills(String uuid, int kills) {

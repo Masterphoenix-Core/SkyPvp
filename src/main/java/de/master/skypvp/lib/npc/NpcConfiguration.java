@@ -14,8 +14,8 @@ public class NpcConfiguration {
     
     public boolean npcLoaded;
     
-    private YamlConfiguration config;
-    private File file;
+    private final YamlConfiguration config;
+    private final File file;
     
     public NpcConfiguration() {
         npcLoaded = false;
@@ -70,15 +70,16 @@ public class NpcConfiguration {
                 OfflinePlayer op = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(npcId);
     
                 if (op != null && op.hasPlayedBefore()) {
-                    Npc npc = new Npc(config.getString(section + "name"), npcId, JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(npcId).getUniqueId(), loc);
+                    //Npc npc = new Npc(config.getString(section + "name"), npcId, JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(npcId).getUniqueId(), loc);
                     if (config.getConfigurationSection("npc." + npcId).getKeys(false).contains("playerSkinName")) {
-                        npc.setSkin(config.getString(section + "playerSkinName"));
+                        //npc.setSkin(config.getString(section + "playerSkinName"));
                     }
-                    npc.spawn();
+                    //npc.spawn();
     
                 } else {
-                    Npc npc = new Npc(config.getString(section + "name"), npcId, UUID.randomUUID(), loc);
-                    npc.spawn();
+                    //Npc npc = new Npc(config.getString(section + "name"), npcId, UUID.randomUUID(), loc);
+                    
+                    //npc.spawn();
                 }
                 
                 System.out.println("Created NPC: " + config.getString(section + "name"));

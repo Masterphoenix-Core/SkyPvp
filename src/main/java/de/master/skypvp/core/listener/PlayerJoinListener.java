@@ -31,6 +31,10 @@ public class PlayerJoinListener implements Listener {
         if (!sqlStats.playerExists(e.getPlayer().getUniqueId().toString())) {
             e.getPlayer().sendMessage("Attempting to create...");
             sqlStats.createPlayer(e.getPlayer().getUniqueId().toString());
+    
+            if (!sqlStats.playerExists(e.getPlayer().getUniqueId().toString())) {
+                e.getPlayer().sendMessage("§cEs ist ein Fehler aufgetreten.");
+            }
             e.getPlayer().sendMessage("Created §a" + e.getPlayer().getName() + " §7in database");
         } else
             e.getPlayer().sendMessage("Bereits in der Database");
