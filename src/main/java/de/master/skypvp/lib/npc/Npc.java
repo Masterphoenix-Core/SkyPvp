@@ -36,7 +36,7 @@ public class Npc implements Serializable {
     
     public Npc(String name, Location location) {
         entityId = (int) Math.ceil(Math.random() * 1000) + 2000;
-        gameProfile = new GameProfile(UUID.randomUUID(), name);
+        gameProfile = new GameProfile(UUID.randomUUID(), "§7" + name);
         this.location = location.clone();
         
         JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.put(entityId, this);
@@ -44,7 +44,7 @@ public class Npc implements Serializable {
     
     public Npc(String name, Integer entityID, UUID uuid, Location location) {
         this.entityId = entityID;
-        gameProfile = new GameProfile(uuid, name);
+        gameProfile = new GameProfile(uuid, "§7" + name);
         this.location = location.clone();
         
         JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getStorage().npcList.put(entityID, this);
@@ -82,6 +82,8 @@ public class Npc implements Serializable {
     public void spawn(Player player) {
         sendPacket(packetPlayOutNamedEntitySpawn(), player);
         headRotation(location.getYaw(), location.getPitch());
+        
+        removeFromTablist();
     }
     
     public void teleport(Location location) {
@@ -222,7 +224,6 @@ public class Npc implements Serializable {
         setValue(packet, "h", 0);
         DataWatcher w = new DataWatcher(null);
         w.a(6, health);
-        addToTablist();
         w.a(10, (byte) 127);
         setValue(packet, "i", w);
         

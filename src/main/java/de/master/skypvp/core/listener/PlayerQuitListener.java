@@ -16,9 +16,7 @@ public class PlayerQuitListener implements Listener {
     
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        
         e.setQuitMessage(CoreLib.prefix + "§e" + e.getPlayer().getName() + " §7hat das Spiel §cverlassen§7.");
-        
     }
     
 }

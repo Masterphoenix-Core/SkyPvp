@@ -4,6 +4,7 @@ import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.CoreLib;
 import de.master.skypvp.lib.Storage;
 import de.master.skypvp.lib.util.ItemBuilder;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -28,9 +29,11 @@ public class SkyPvpCommandExecutor implements CommandExecutor {
     
                         if (!storage.buildList.contains(p.getName())) {
                             storage.buildList.add(p.getName());
+                            p.setGameMode(GameMode.CREATIVE);
                             p.sendMessage(CoreLib.prefix + "Du kannst nun bauen.");
                         } else {
                             storage.buildList.remove(p.getName());
+                            p.setGameMode(GameMode.SURVIVAL);
                             p.sendMessage(CoreLib.prefix + "Du kannst nun nicht mehr bauen.");
                         }
                         
@@ -43,8 +46,10 @@ public class SkyPvpCommandExecutor implements CommandExecutor {
                             JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().addLocation("spawn", p.getLocation());
                             p.sendMessage(CoreLib.prefix + "Du hast den Spawn gesetzt.");
                 
-                        }
-                    }
+                        } else
+                            p.sendMessage(CoreLib.prefix + "Meintest du §c/set spawn§7?");
+                    } else
+                        p.sendMessage(CoreLib.prefix + "Bitte benutze §c/set <spawn>§7.");
     
                     //skypvp giveitem MATERIAL NAME
                 } else if (args.length == 3) {
@@ -69,7 +74,7 @@ public class SkyPvpCommandExecutor implements CommandExecutor {
                 p.sendMessage(CoreLib.noPerms);
             
         } else
-            sender.sendMessage("Dieser Command ist nur für Spieler!");
+            sender.sendMessage("Dieses Feature ist nur für Spieler!");
         
         return false;
     }

@@ -1,5 +1,5 @@
 name: SkyPvP
-version: "0.98.12-SNAPSHOT"
+version: "0.99.1-SNAPSHOT"
 author: Masterphoenix
 main: de.master.skypvp.core.bootstrap.SkyPvp
 commands:

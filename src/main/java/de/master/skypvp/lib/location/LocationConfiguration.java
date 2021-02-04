@@ -17,8 +17,8 @@ import java.io.IOException;
 
 public class LocationConfiguration {
     
-    private File file;
-    private YamlConfiguration config;
+    private final File file;
+    private final YamlConfiguration config;
     
     public LocationConfiguration(Storage storage) {
         file = new File("plugins/SkyPvP", "locations.yml");
@@ -64,7 +64,6 @@ public class LocationConfiguration {
     
         if (config.getConfigurationSection("sign") != null) {
             for (String signString : config.getConfigurationSection("sign").getKeys(false)) {
-        
                 String section = "sign." + signString + ".";
                 Location loc = new Location(Bukkit.getWorld(config.getString(section + "World")), config.getDouble(section + "X"), config.getDouble(section + "Y"), config.getDouble(section + "Z"));
                 if (loc.getBlock().getType().equals(Material.SIGN) || loc.getBlock().getType().equals(Material.SIGN_POST) || loc.getBlock().getType().equals(Material.WALL_SIGN)) {
@@ -86,13 +85,11 @@ public class LocationConfiguration {
     }
     
     public void reloadSigns() {
-        
         SqlStats sqlStats = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats();
     
         for (int i = 1; i < 4; i++) {
     
             Sign sign = getTopSign("Top" + i);
-    
             if (sqlStats.getTopPlayer(i) == null) {
                 sign.setLine(1, "Noch keine Daten...");
                 sign.setLine(2, "");
@@ -116,7 +113,6 @@ public class LocationConfiguration {
     public void addItemSign(Location loc, ItemStack item) {
         
         int signCount = 0;
-        
         if (config.getConfigurationSection("itemSign") != null) {
             signCount = config.getConfigurationSection("itemSign").getKeys(false).size();
         }

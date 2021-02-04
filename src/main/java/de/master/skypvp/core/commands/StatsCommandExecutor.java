@@ -23,9 +23,7 @@ public class StatsCommandExecutor implements CommandExecutor {
             if (args.length == 0) {
                 
                 p.sendMessage(CoreLib.prefix + "Deine Stats:");
-    
                 sendStats(p, p.getUniqueId());
-    
     
             } else if (args.length == 1) {
     
@@ -42,7 +40,8 @@ public class StatsCommandExecutor implements CommandExecutor {
             } else
                 p.sendMessage(CoreLib.prefix + "Bitte benutze §c/stats (<Spieler>)§7.");
             
-        }
+        } else
+            sender.sendMessage(CoreLib.prefix + "Dieses Feature ist nur für Spieler.");
         
         return false;
     }

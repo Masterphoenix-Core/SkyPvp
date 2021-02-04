@@ -27,7 +27,7 @@ public class SkyPvp extends JavaPlugin {
     
     @Override
     public void onDisable() {
-    
+        mySql.disconnect();
     }
     
     private void initCommands() {

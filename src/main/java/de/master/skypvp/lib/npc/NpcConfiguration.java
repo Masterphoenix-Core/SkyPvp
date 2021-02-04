@@ -26,7 +26,7 @@ public class NpcConfiguration {
     
     public void addNpc(Npc npc) {
         
-        config.set("npc." + npc.getEntityId() + ".name", npc.getGameProfile().getName());
+        config.set("npc." + npc.getEntityId() + ".name", npc.getGameProfile().getName().replaceAll("§", "&"));
         config.set("npc." + npc.getEntityId() + ".World", npc.getLocation().getWorld().getName());
         config.set("npc." + npc.getEntityId() + ".X", npc.getLocation().getX());
         config.set("npc." + npc.getEntityId() + ".Y", npc.getLocation().getY());
@@ -70,16 +70,15 @@ public class NpcConfiguration {
                 OfflinePlayer op = JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(npcId);
     
                 if (op != null && op.hasPlayedBefore()) {
-                    //Npc npc = new Npc(config.getString(section + "name"), npcId, JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(npcId).getUniqueId(), loc);
+                    Npc npc = new Npc(config.getString(section + "name").replaceAll("&", "§"), npcId, JavaPlugin.getPlugin(SkyPvp.class).getMySql().getSqlStats().getTopPlayer(npcId).getUniqueId(), loc);
                     if (config.getConfigurationSection("npc." + npcId).getKeys(false).contains("playerSkinName")) {
-                        //npc.setSkin(config.getString(section + "playerSkinName"));
+                        npc.setSkin(config.getString(section + "playerSkinName"));
                     }
-                    //npc.spawn();
+                    npc.spawn();
     
                 } else {
-                    //Npc npc = new Npc(config.getString(section + "name"), npcId, UUID.randomUUID(), loc);
-                    
-                    //npc.spawn();
+                    Npc npc = new Npc(config.getString(section + "name").replaceAll("&", "§"), npcId, UUID.randomUUID(), loc);
+                    npc.spawn();
                 }
                 
                 System.out.println("Created NPC: " + config.getString(section + "name"));

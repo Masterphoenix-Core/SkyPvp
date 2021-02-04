@@ -45,14 +45,12 @@ public class NpcCommandExecutor implements CommandExecutor {
                                 JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getNpcConfiguration().addNpc(npc);
                             } else {
                                 Npc npc = new Npc("--- None ---", top, UUID.randomUUID(), p.getLocation());
-                                npc.setSkin("Masterphoenix_");
                                 npc.spawn();
                                 JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getNpcConfiguration().addNpc(npc);
                             }
                             
                             
                             // SPAWN TOP X
-                            
                             p.sendMessage(CoreLib.prefix + "Du hast den Top-Player §6Nummer " + top + " §7gespawnt!");
                             
                         } else

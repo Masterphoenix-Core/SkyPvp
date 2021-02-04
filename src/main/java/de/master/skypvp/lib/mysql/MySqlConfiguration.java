@@ -13,21 +13,6 @@ public class MySqlConfiguration {
     public MySqlConfiguration() {
     
         file = new File("plugins/SkyPvP", "mysql.yml");
-    
-        
-        /*
-        if (!file.exists()) {
-            try {
-                if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
-                }
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-         */
-        
         
         config = YamlConfiguration.loadConfiguration(file);
         
@@ -41,6 +26,7 @@ public class MySqlConfiguration {
         config.addDefault("mysql.user", "skypvp");
         config.addDefault("mysql.password", "password");
     
+        config.options().copyDefaults(true);
         try {
             config.save(file);
         } catch (IOException e) {

@@ -3,7 +3,6 @@ package de.master.skypvp.core.listener;
 import de.master.skypvp.core.bootstrap.SkyPvp;
 import de.master.skypvp.lib.CoreLib;
 import de.master.skypvp.lib.mysql.SqlStats;
-import de.master.skypvp.lib.npc.Npc;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,17 +26,9 @@ public class PlayerJoinListener implements Listener {
         e.getPlayer().getInventory().clear();
         e.getPlayer().getInventory().addItem(coreLib.getKitConfiguration().kitItem);
     
-        e.getPlayer().sendMessage("Checking Database...");
         if (!sqlStats.playerExists(e.getPlayer().getUniqueId().toString())) {
-            e.getPlayer().sendMessage("Attempting to create...");
             sqlStats.createPlayer(e.getPlayer().getUniqueId().toString());
-    
-            if (!sqlStats.playerExists(e.getPlayer().getUniqueId().toString())) {
-                e.getPlayer().sendMessage("§cEs ist ein Fehler aufgetreten.");
-            }
-            e.getPlayer().sendMessage("Created §a" + e.getPlayer().getName() + " §7in database");
-        } else
-            e.getPlayer().sendMessage("Bereits in der Database");
+        }
         
         if (!coreLib.getNpcConfiguration().npcLoaded) {
             coreLib.getNpcConfiguration().loadNpcs();

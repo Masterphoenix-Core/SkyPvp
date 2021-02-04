@@ -27,9 +27,6 @@ public class MySql {
     
     private final MySqlConfiguration mySqlConfig;
     
-    private String user = "skypvp", database = "skypvp";
-    
-    
     public MySql() {
         mySqlConfig = new MySqlConfiguration();
         sqlStats = new SqlStats(this);
@@ -67,27 +64,24 @@ public class MySql {
     
             return mySqlThread;
         } else {
-            System.out.println("MySql errored, not executing connect()");
             return null;
         }
     }
     
-/*
+
     public void disconnect() {
     
-        try {
-            connect().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (mySqlThread != null && mySqlThread.isAlive()) {
+            try {
+                mySqlThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-    
         try {
             if (con != null) {
                 con.close();
                 Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cVerbindung unterbrochen!");
-                
-                mySqlThread.stop();
-                
                 isConnected = false;
             }
         } catch (SQLException throwables) {
@@ -95,7 +89,7 @@ public class MySql {
             Bukkit.getConsoleSender().sendMessage(mySqlPrefix + "§cError:" + throwables.getMessage());
         }
     }
- */
+ 
     
     public void update(String qry) {
         
@@ -109,19 +103,14 @@ public class MySql {
             }
             
         } else {
-    
             if (errored) {
-                //System.out.println("MySql errored, not executing update()");
                 return;
             }
-            
-            System.err.println("Connection == null");
-    
             try {
                 if (mySqlThread != null && mySqlThread.isAlive()) {
                     mySqlThread.join();
-                } else {
                     
+                } else {
                     System.out.println("Trying to connect MySql from update()");
                     connect().join();
                     
@@ -139,7 +128,6 @@ public class MySql {
     public ResultSet query(String qry) {
         
         if (con != null) {
-            
             try {
                 Statement st = con.createStatement();
                 return st.executeQuery(qry);
@@ -148,13 +136,9 @@ public class MySql {
             }
             
         } else {
-            
             if (errored) {
-                //System.out.println("MySql errored, not executing query()");
                 return null;
             }
-            
-            System.err.println("Connection == null");
             
             try {
                 if (mySqlThread != null && mySqlThread.isAlive()) {
@@ -172,7 +156,6 @@ public class MySql {
             }
             
         }
-        
         return null;
         
     }

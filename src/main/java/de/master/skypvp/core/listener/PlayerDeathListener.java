@@ -68,7 +68,6 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         e.getPlayer().getInventory().addItem(JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getKitConfiguration().kitItem);
-    
         e.getPlayer().teleport(JavaPlugin.getPlugin(SkyPvp.class).getCoreLib().getLocationConfiguration().getLocation("spawn"));
     }
 }

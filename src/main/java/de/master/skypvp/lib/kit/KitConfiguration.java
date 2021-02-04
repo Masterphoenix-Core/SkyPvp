@@ -33,7 +33,6 @@ public class KitConfiguration {
     
     private void addDefaults() {
         
-        
         for (int i = 0; i < CoreLib.maxKits; i++) {
             config.addDefault("kit." + i + ".enable", false);
             config.addDefault("kit." + i + ".name", "DisplayName");
