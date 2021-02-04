@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public class MySqlConfiguration {
     
-    private File file;
-    private YamlConfiguration config;
+    private final File file;
+    private final YamlConfiguration config;
     
     public MySqlConfiguration() {
     
